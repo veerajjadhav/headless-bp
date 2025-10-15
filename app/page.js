@@ -1,29 +1,49 @@
-import { getPosts } from '../lib/api';
+// page.js
+import GridLayout from '../components/GridLayout'; // Import GridLayout
+import BannerCTA from '../components/BannerCTA'; // Import BannerCTA
+import FullWidthBannerCTA from '../components/FullWidthBannerCTA'; // Import FullWidthBannerCTA
+import CenteredCTABox from '../components/CenteredCTABox'; // Import CenteredCTABox
+import GradientCTA from '../components/GradientCTA'; // Import GradientCTA
+
+import { getGridLayoutData, getBannerCTAData } from '../lib/wp'; // Import functions from wp.js
 
 export default async function Home() {
-  const posts = await getPosts();
+  const pageId = 20; // Replace with your page ID
+  
+  // Fetch Grid Layout Data
+  const gridData = await getGridLayoutData(pageId);
+  
+  // Fetch Banner CTA Data
+  const bannerData = await getBannerCTAData(pageId);
 
-  console.log("📦 Rendering posts:", posts.length);
+  // Example Data for CTA Components
+  const centeredCTAData = {
+    title: 'Get Started Now',
+    description: 'Sign up to get access to exclusive features.',
+    ctaText: 'Sign Up',
+    ctaUrl: '/signup',
+  };
+
+  const gradientCTAData = {
+    title: 'Join Our Community',
+    description: 'Become a member and get instant access to all our resources.',
+    ctaText: 'Join Now',
+    ctaUrl: '/join',
+  };
 
   return (
-    <main className="p-6">
-      <h1 className="text-3xl font-bold mb-6">WordPress Posts</h1>
+    <main className="w-full">
+      {/* Render Full-Width Banner CTA if data exists */}
+      {bannerData && <FullWidthBannerCTA data={bannerData} isFullWidth={true} />}
+      
+      {/* Render Centered CTA Box */}
+      <CenteredCTABox {...centeredCTAData} />
+      
+      {/* Render Gradient CTA */}
+      <GradientCTA {...gradientCTAData} />
 
-      {posts.length === 0 ? (
-        <p className="text-red-600">⚠️ No posts found or API error. Check logs.</p>
-      ) : (
-        <ul className="space-y-4">
-          {posts.map((post) => (
-            <li key={post.id} className="p-4 border rounded shadow">
-              <h2 className="text-xl font-semibold">{post.title.rendered}</h2>
-              <div
-                className="text-gray-700"
-                dangerouslySetInnerHTML={{ __html: post.excerpt.rendered }}
-              />
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Render Grid Layout if data exists */}
+      {gridData && <GridLayout data={gridData} isFullWidth={false} />}
     </main>
   );
 }
